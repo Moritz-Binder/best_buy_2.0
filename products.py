@@ -1,16 +1,18 @@
+from typing import Union
+from numbers import Number
 class Product:
-    def __init__(self, name: str, price: float, quantity: int):
+    def __init__(self, name: str, price: Number, quantity: int):
         """
         Initiator (constructor) method.
         Creates the instance variables (active is set to True).
         If something is invalid (empty name / negative price or quantity), raises an exception.
         """
-        if price < 0:
-            raise ValueError("Price cannot be negative.")
-        if quantity < 0:
-            raise ValueError("Quantity cannot be negative.")
-        if not name:
-            raise ValueError("Name cannot be empty.")
+        if not isinstance(price, Number) or price < 0:
+            raise ValueError("Price cannot be negative. Price must be a number.")
+        if not isinstance(quantity, int) or quantity < 0:
+            raise ValueError("Quantity cannot be negative. Quantity must be an integer.")
+        if not isinstance(name, str) or not name:
+            raise ValueError("Name cannot be empty. Name must be a string.")
 
         self.name = name
         self.price = price
@@ -28,11 +30,11 @@ class Product:
         """
         Setter function for quantity. If quantity reaches 0, deactivates the product.
         """
-        if quantity < 0:
-            raise ValueError("Quantity cannot be negative.")
+        if not isinstance(quantity, int) or quantity < 0:
+            raise ValueError("Quantity cannot be negative. Quantity must be an integer.")
         self.quantity = quantity
         if self.quantity == 0:
-            self.active = False
+            self.deactivate()
     
     def is_active(self) -> bool:
         """
@@ -45,13 +47,13 @@ class Product:
         """
         Activates the product (sets acitve to True).
         """
-        return self.active == True
+        self.active = True
     
     def deactivate(self):
         """
         Deactivates the product (sets active to False).
         """
-        return self.active == False
+        self.active = False
     
     def show(self) -> str:
         """
@@ -64,8 +66,8 @@ class Product:
         Buys a certain quantity of the product. If the quantity is greater than the available quantity, raises an exception.
         If the purchase is successful, reduces the quantity and returns the total price (price * quantity).
         """
-        if quantity < 0:
-            raise ValueError("Quantity cannot be negative.")
+        if not isinstance(quantity, int) or quantity < 0:
+            raise ValueError("Quantity cannot be negative. Quantity must be an integer.")
         if quantity > self.quantity:
             raise ValueError("Not enough quantity available.")
         
@@ -75,11 +77,12 @@ class Product:
 
 # Unit Tests
 # bose = Product("Bose QuietComfort Earbuds", price=250, quantity=500)
-# mac = Product("MacBook Air M2", price=1450, quantity=100)
+mac = Product("MacBook Air M2", price=1450, quantity=100)
 
 # print(bose.buy(50))
-# print(mac.buy(100))
-# print(mac.is_active())
+print(mac.buy(100))
+print(mac.get_quantity())
+print(mac.is_active())
 
 # print(bose.show())
 # print(mac.show())
