@@ -75,7 +75,54 @@ class Product:
         self.set_quantity(self.quantity - quantity)
         return total_price
 
-# Unit Tests
+class NonStockedProduct(Product):
+    """
+    Non stocked products
+    Some products in the store are not physical, so we don’t need to keep track of their quantity. 
+    for example - a Microsoft Windows license. 
+    On these products, the quantity should be set to zero and always stay that way.
+    """
+    def __init__(self, name: str, price: Number):
+        super().__init__(name, price, quantity=0)
+    
+    def buy(self, quantity: int) -> float:
+        """
+        Buys a certain quantity of the product.
+        If the purchase is successful, reduces the quantity and returns the total price (price * quantity).
+        """
+        total_price = self.price * quantity
+        return total_price
+
+class LimitedProduct(Product):
+    """
+    Limited products
+    Some products can only be purchased X times in an order. 
+    For example - a shipping fee can only be added once. 
+    If an order is attempted with quantity larger than the maximum one, it should be refused with an exception.
+    """
+    def __init__(self, name: str, price: Number, quantity: int, maximum: int):
+        super().__init__(name, price, quantity)
+        if not isinstance(maximum, int) or maximum < 0:
+            raise ValueError("Quantity cannot be negative. Quantity must be an integer.")
+        self.maximum = maximum
+    
+    def buy(self, quantity: int) -> float:
+        """
+        Buys a certain quantity of the product. If the quantity is greater than the maximum allowed or the available quantity, raises an exception.
+        If the purchase is successful, reduces the quantity and returns the total price (price * quantity).
+        """
+        if not isinstance(quantity, int) or quantity < 0:
+            raise ValueError("Quantity cannot be negative. Quantity must be an integer.")
+        if quantity > self.maximum:
+            raise ValueError("Quantity exeeding maximum amount. (maximum=1)")
+        if quantity > self.quantity:
+            raise ValueError("Not enough quantity available.")
+        
+        total_price = self.price * quantity
+        self.set_quantity(self.quantity - quantity)
+        return total_price
+
+# Tests
 # bose = Product("Bose QuietComfort Earbuds", price=250, quantity=500)
 mac = Product("MacBook Air M2", price=1450, quantity=100)
 
