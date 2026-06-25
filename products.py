@@ -1,5 +1,6 @@
 from typing import Union
 from numbers import Number
+from promotion import Promotion
 class Product:
     def __init__(self, name: str, price: Number, quantity: int):
         """
@@ -18,6 +19,7 @@ class Product:
         self.price = price
         self.quantity = quantity
         self.active = True
+        self.promotion = None
     
     def get_quantity(self) -> int:
         """
@@ -25,6 +27,27 @@ class Product:
         Returns the quantity (int).
         """
         return self.quantity
+    
+    def get_price(self) -> float:
+        """
+        Getter function for price.
+        Returns the price (float).
+        """
+        return self.price
+    
+    def set_promotion(self, value):
+        """
+        Setter function for Promotion.
+        Saves Promotion in instance variable.
+        """
+        self.promotion = value
+    
+    def get_name(self) -> str:
+        """
+        Getter function for name.
+        Returns the name (str).
+        """
+        return self.name
     
     def set_quantity(self, quantity: int):
         """
@@ -61,7 +84,7 @@ class Product:
         """
         return f"{self.name}, Price: {self.price:.2f}, Quantity: {self.quantity}"
     
-    def buy(self, quantity: int) -> float:
+    def buy_no_promo(self, quantity: int) -> float:
         """
         Buys a certain quantity of the product. If the quantity is greater than the available quantity, raises an exception.
         If the purchase is successful, reduces the quantity and returns the total price (price * quantity).
@@ -75,6 +98,24 @@ class Product:
         self.set_quantity(self.quantity - quantity)
         return total_price
 
+    def buy(self, quantity: int) -> float:
+        """
+        Buys a certain quantity of the product. If the quantity is greater than the available quantity, raises an exception.
+        If the purchase is successful, reduces the quantity and returns the total price (price * quantity).
+        """
+        if not isinstance(quantity, int) or quantity < 0:
+            raise ValueError("Quantity cannot be negative. Quantity must be an integer.")
+        if quantity > self.quantity:
+            raise ValueError("Not enough quantity available.")
+        
+        if isinstance(self.promotion, Promotion):
+            total_price = self.promotion.apply_promotion(self, quantity)
+            return total_price
+        else:
+            total_price = self.price * quantity
+            self.set_quantity(self.quantity - quantity)
+            return total_price
+
 class NonStockedProduct(Product):
     """
     Non stocked products
@@ -85,13 +126,31 @@ class NonStockedProduct(Product):
     def __init__(self, name: str, price: Number):
         super().__init__(name, price, quantity=0)
     
+    def buy_no_promo(self, quantity: int) -> float:
+        """
+        Buys a certain quantity of the product.
+        If the purchase is successful, reduces the quantity and returns the total price (price * quantity).
+        """
+        if not isinstance(quantity, int) or quantity < 0:
+            raise ValueError("Quantity cannot be negative. Quantity must be an integer.")
+        
+        total_price = self.price * quantity
+        return total_price
+    
     def buy(self, quantity: int) -> float:
         """
         Buys a certain quantity of the product.
         If the purchase is successful, reduces the quantity and returns the total price (price * quantity).
         """
-        total_price = self.price * quantity
-        return total_price
+        if not isinstance(quantity, int) or quantity < 0:
+            raise ValueError("Quantity cannot be negative. Quantity must be an integer.")
+        
+        if isinstance(self.promotion, Promotion):
+            total_price = self.promotion.apply_promotion(self, quantity)
+            return total_price
+        else:
+            total_price = self.price * quantity
+            return total_price
 
 class LimitedProduct(Product):
     """
@@ -106,7 +165,7 @@ class LimitedProduct(Product):
             raise ValueError("Quantity cannot be negative. Quantity must be an integer.")
         self.maximum = maximum
     
-    def buy(self, quantity: int) -> float:
+    def buy_no_promo(self, quantity: int) -> float:
         """
         Buys a certain quantity of the product. If the quantity is greater than the maximum allowed or the available quantity, raises an exception.
         If the purchase is successful, reduces the quantity and returns the total price (price * quantity).
@@ -122,14 +181,34 @@ class LimitedProduct(Product):
         self.set_quantity(self.quantity - quantity)
         return total_price
 
+    def buy(self, quantity: int) -> float:
+        """
+        Buys a certain quantity of the product. If the quantity is greater than the maximum allowed or the available quantity, raises an exception.
+        If the purchase is successful, reduces the quantity and returns the total price (price * quantity).
+        """
+        if not isinstance(quantity, int) or quantity < 0:
+            raise ValueError("Quantity cannot be negative. Quantity must be an integer.")
+        if quantity > self.maximum:
+            raise ValueError("Quantity exeeding maximum amount. (maximum=1)")
+        if quantity > self.quantity:
+            raise ValueError("Not enough quantity available.")
+        
+        if isinstance(self.promotion, Promotion):
+            total_price = self.promotion.apply_promotion(self, quantity)
+            return total_price
+        else:
+            total_price = self.price * quantity
+            self.set_quantity(self.quantity - quantity)
+            return total_price
+
 # Tests
 # bose = Product("Bose QuietComfort Earbuds", price=250, quantity=500)
-mac = Product("MacBook Air M2", price=1450, quantity=100)
+#mac = Product("MacBook Air M2", price=1450, quantity=100)
 
 # print(bose.buy(50))
-print(mac.buy(100))
-print(mac.get_quantity())
-print(mac.is_active())
+#print(mac.buy(100))
+#print(mac.get_quantity())
+#print(mac.is_active())
 
 # print(bose.show())
 # print(mac.show())

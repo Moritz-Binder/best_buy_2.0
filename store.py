@@ -51,8 +51,7 @@ class Store:
         total_price = 0.0
         for product, quantity in shopping_list:
             if product is not None:
-                total_price += product.price * quantity
-                product.buy(quantity)
+                total_price += product.buy(quantity)
             else:
                 raise ValueError(f"Product '{product}' not found in the store.")
         return total_price

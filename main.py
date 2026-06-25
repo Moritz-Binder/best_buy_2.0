@@ -1,14 +1,26 @@
-import products
-import store
+from products import Product, NonStockedProduct, LimitedProduct
+from store import Store
+from promotion import XItemHalfOff, BuyXGetOneFree, PercentageDiscount, Promotion
 
 # setup initial stock of inventory
-product_list = [ products.Product("MacBook Air M2", price=1450, quantity=100),
-                 products.Product("Bose QuietComfort Earbuds", price=250, quantity=500),
-                 products.Product("Google Pixel 7", price=500, quantity=250),
-                 products.NonStockedProduct("Windows License", price=125),
-                 products.LimitedProduct("Shipping", price=10, quantity=250, maximum=1)
+product_list = [ Product("MacBook Air M2", price=1450, quantity=100),
+                 Product("Bose QuietComfort Earbuds", price=250, quantity=500),
+                 Product("Google Pixel 7", price=500, quantity=250),
+                 NonStockedProduct("Windows License", price=125),
+                 LimitedProduct("Shipping", price=10, quantity=250, maximum=1)
                ]
-best_buy = store.Store("best_buy", product_list)
+
+# Create promotion catalog
+second_half_price = XItemHalfOff("Second Half price!",2)
+third_one_free = BuyXGetOneFree("Third One Free!", 2)
+thirty_percent = PercentageDiscount("30% off!", 0.3)
+
+# Add promotions to products
+product_list[0].set_promotion(second_half_price)
+product_list[1].set_promotion(third_one_free)
+product_list[3].set_promotion(thirty_percent)
+
+best_buy = Store("best_buy", product_list)
 
 def show_products(stores):
     """
@@ -92,14 +104,14 @@ def start():
     # The Main Menu loop
     stores_input = input("Enter the store name: ")
 
-    if stores_input in store.Store.stores.keys():
+    if stores_input in Store.stores.keys():
         print(f"Welcome to {stores_input}!")
     else:
         print(f"Store {stores_input} not found. Exiting...")
         return
 
     while True:
-        choice_func = show_menu_and_get_input(store.Store.stores[stores_input])
+        choice_func = show_menu_and_get_input(Store.stores[stores_input])
         choice_func()
 
 
