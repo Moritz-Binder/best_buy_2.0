@@ -1,9 +1,10 @@
 class Store:
-    stores = {}
+    all_instances = []
 
     def __init__(self, name: str, products=None):
         self.name = name
-        Store.stores[self.name] = self
+        # Automatically register this instance upon creation
+        Store.all_instances.append(self)
         
         if products is None:
             self.products = []
