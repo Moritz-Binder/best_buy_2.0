@@ -18,7 +18,7 @@ class Product:
         self.name = name
         self.price = price
         self.quantity = quantity
-        self.active = True
+        self.active = self.quantity > 0
         self.promotion = None
     
     def get_quantity(self) -> int:
@@ -82,7 +82,7 @@ class Product:
         """
         Returns a string representation of the product in the format: "name, Price: price, Quantity: quantity".
         """
-        return f"{self.name}, Price: {self.price:.2f}, Quantity: {self.quantity}"
+        return f"{self.name}, Price: {self.price:.2f}, Quantity: {self.quantity}, Promotion: {self.promotion}"
     
     def buy_no_promo(self, quantity: int) -> float:
         """
