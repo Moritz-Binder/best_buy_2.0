@@ -28,7 +28,7 @@ def show_products(stores):
     """
     products = stores.get_all_products()
     for product in products:
-        print(product.name)
+        print(product.show())
     
     return show_menu_and_get_input(stores)
 
@@ -37,7 +37,11 @@ def show_store_amount(stores):
     Show all products in the store.
     """
     total_quantity = stores.get_total_quantity()
-    print(total_quantity)
+    products = stores.get_all_products()
+    print("The total quantity of all products in the store is: ",total_quantity)
+    print("\n Detailed list:\n")
+    for product in products:
+        print(f"{product.name}: {product.get_quantity()}")
     
     return show_menu_and_get_input(stores)
 
@@ -53,11 +57,13 @@ def make_order(stores):
     while True:
         print("The store has the following products:")
         for key, product in product_dict.items():
-            print(key, product.name)
+            print(key, product.show())
         product_number = input("Enter product number (or 'done' to finish): ")
         if product_number.lower() == 'done':
             break
         quantity = int(input("Enter quantity: "))
+        while product_dict[int(product_number)].get_quantity < quantity:
+          quantity = int(input(f"There are only {product_dict[int(product_number)].get_quantity} of {product_dict[int(product_number)].name} available. Please enter a valid quantity: "))
         shopping_list.append((product_dict[int(product_number)], quantity))
     
     total_price = stores.order(shopping_list)
@@ -102,6 +108,9 @@ FUNCTIONS = { 1: (show_products, "List all products in store"),
 def start():
 
     # The Main Menu loop
+    print("The following stores are available:")
+    for s in Store.all_instances:
+      print(s.name)
     stores_input = input("Enter the store name: ")
 
     if stores_input in Store.stores.keys():
